@@ -3,7 +3,7 @@
 \immediate\write18{echo -n "\\newcommand{\\gitroot}{" > gitroot.txt && git rev-parse --show-toplevel >> gitroot.txt && truncate -s-1 gitroot.txt && echo -n "}" >> gitroot.txt}
 
 \input{gitroot.txt}
-\usepackage{\gitroot/latexTemplates/preamble}
+\usepackage{\gitroot/latexTemplate/preamble}
 
 
 \newcommand{\Author}{Brandon Henke}
