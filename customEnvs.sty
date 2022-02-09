@@ -1,0 +1,43 @@
+\ProvidesPackage{customenvs}
+
+\newcounter{example}[subsection]
+\newenvironment{example}
+{\begin{adjustwidth}{1cm}{1cm}
+		\refstepcounter{example}\par\medskip
+		\noindent\textbf{Example \arabic{section}.\arabic{subsection}.\theexample}
+	}
+	{\end{adjustwidth}
+}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+
+% \newenvironment{theorem}[1]
+% {\noindent\textbf{#1}
+% 	\begin{adjustwidth}{2cm}{2cm}
+% 		\em
+% 	}{\end{adjustwidth}}
+% \newenvironment{proof}
+% {\noindent\textbf{Proof}
+% 	\begin{adjustwidth}{2cm}{2cm}
+% 	}
+% 	{
+
+% 		\hfill
+% 		\textbf{QED}
+% 	\end{adjustwidth}
+% }
+
+\newenvironment{changemargin}[2]{%
+  \begin{list}{}{%
+    \setlength{\topsep}{0pt}%
+    \setlength{\leftmargin}{#1}%
+    \setlength{\rightmargin}{#2}%
+    \setlength{\listparindent}{\parindent}%
+    \setlength{\itemindent}{\parindent}%
+    \setlength{\parsep}{\parskip}%
+  }%
+  \item[]}{\end{list}}
+
+\endinput

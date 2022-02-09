@@ -1,0 +1,34 @@
+\ProvidesPackage{titleinfo}
+\usepackage{authorsaffils}
+% \makeatletter
+% \let\c@affil\relax
+% \makeatother
+% \usepackage[affil-it]{authblk}
+
+% \makeatletter
+% \patchcmd{\frontmatter@RRAP@format}{(}{}{}{}
+% \patchcmd{\frontmatter@RRAP@format}{)}{}{}{}
+% \renewcommand\Dated@name{}
+% \makeatother
+
+% ========== [Create Title] ==========
+
+\newcommand{\thetitle}{Proceedings} % Set title
+
+\newcommand{\titleinf}{%
+
+\title{\thetitle}
+
+\authaffils
+
+\date{\today} % Set date
+
+
+% \begin{abstract}
+%     \lipsum[5]
+% \end{abstract}
+
+}
+
+
+\endinput

@@ -1,47 +1,167 @@
-\documentclass[a4paper,12pt,twoside]{article}
+\documentclass[
+a4paper,
+10pt,
+twoside,
+prd,
+aps,
+nofootinbib,
+superscriptaddress,
+floatfix,
+preprintnumbers,
+twocolumn
+]{revtex4}
+% ]{article}
 
-\immediate\write18{echo -n "\\newcommand{\\gitroot}{" > gitroot.txt && git rev-parse --show-toplevel >> gitroot.txt && truncate -s-1 gitroot.txt && echo -n "}" >> gitroot.txt}
 
-\input{gitroot.txt}
-\usepackage{\gitroot/latexTemplate/preamble}
+\usepackage{preambleRev}
+\usepackage{titleinfo}
 
-
-\newcommand{\Author}{Brandon Henke}
-\newcommand{\course}{\textit{COURSE NUMBER}}
-\newcommand{\professor}{\textit{PROFESSOR NAME}}
-
-\newcommand{\mcols}{0}
-
-
-\title{Homework No.}
-\author{
-	Brandon Henke\\
-	\course\\
-	\professor
+\geometry{ % Set document margins
+	top     = 2cm,
+	bottom  = 2cm,
+	left    = 1cm,
+	right   = 1cm
 }
-\date{September 20, 2021}
+
+\newcommand{\mcols}{2} % Choose number of columns (>= 1)
 
 
+\bibSetup{refs} % Give references file
+
+% ===== Format headers & footers =====
+\pagestyle{fancy}
+\fancyhf{}
 \fancyhead[LE,RO]{B. Henke}
-\fancyhead[RE,LO]{\thepage}
-
-\bibSetup{refs.bib}
+\fancyhead[RE,LO]{\thetitle}
+\fancyfoot[RE,LO]{\thepage}
 
 \begin{document}
-%\tableofcontents
-
+% \tableofcontents
+\titleinf
 \maketitle
-\if\mcols1
-\begin{multicols*}{2}
-\fi
+\startmcols
 
-\section{Test}
+\section{\textit{Oracles for Gauss’s Law on Digital Quantum Computers} and How it Can Be Applied Further than Gauss' law}
+
+\subsection{What is an Oracle?}
+Split space into a lattice $L$ with sites $s \in L$ and links $\ell \in L$, and act on each site with Gauss' law and physicality operators\cite{osti_1609314}:
+\begin{align}
+	\hat{G}_s &= \div{\vb{E}}(s) - \rho(s),\label{eq: gauss law}\\
+	&= \sum_{i=1}^D \left( \hat{E}_i(s)-\hat{E}_i(s-\hat{e}_i)\right)-\sum_{\sigma}e_\sigma \hat{n}_\sigma(s).\label{eq: Gs law}
+\end{align}
+\begin{equation}
+	\hat{F}_s = \left\{
+		\begin{array}{ll}
+			\sum_{k=0}^{N-1} \frac{1}{N} e^{-2\pi i k \hat{G}_s/N} & \text{if}\; g=\mathbb{Z}_N \\
+			\int_{0}^{2\pi} \frac{\dd{\phi}}{2\pi} e^{-i\phi \hat{G}_s} & \text{if}\; g=U(1)
+		\end{array}
+	\right.,
+	\label{eq: Fs}
+\end{equation}
+where $\mathbb{Z}_N$ is the group of integers mod $N$.
+For equation \ref{eq: gauss law}, $\div$ is the discrete divergence.
+The physicality operator is such that, on a particular site, $s$, physical and nonphysical states have eigenvalues of 1 and 0, respectively\cite{osti_1609314}:
+\begin{align}
+	\hat{F}_s \ket{phys} &= \ket{phys},\\
+	\hat{F}_s \ket{nonphys} &= 0.
+\end{align}
+The oracle for testing these states is
+\begin{equation}
+	\hat{O}_s = e^{-i\pi \hat{F}_s}.
+\end{equation}
+When operating on the lattice configuration,
+\begin{equation}
+	\hat{O}_s \ket{\vb{E},\rho} = (-1)^{\hat{F}_s(\vb{E},\rho)}\ket{\vb{E},\rho},
+\end{equation}
+where $\hat{F}_s(\vb{E},\rho) = 0,1$ are the eigenstates for the physical and nonphysical states at the lattice site $s$.
+
+If one wants to generalize this to more physical constraints, besides that of Gauss' law, one only needs to redefine the physicality operator by replacing the Gauss constraint with whatever other constraint is desired.
+The rest follows from there.
+
+\subsection{Creating an Oracle}
+Use a query qbit, $\ket{q}$, that is flipped only if constraint holds at a site, $s \in L$.
+One can implement an oracle with the following steps, using the query qbit\cite{osti_1609314}:
+\begin{enumerate}
+	\item
+	Initialize needed work bits, including query bit, $\ket{q}$ to $\hat{Z}$ basis states $\ket{0}$ or $\ket{1}$.
+	\item
+	Apply a Hadamard gate to query qbit.
+	\item
+	Compute the desired physicality constraint.
+	\item
+	Apply phase flip on the query qbit if and only if the physicality constraint holds and query qbit is set to $\ket{1}$.
+	\item
+	Undo computation step to restore quantum states.
+	\item
+	Apply another Hadamard gate to query bit.
+	\item
+	Measure query qbit in the $\hat{Z}$ basis.
+\end{enumerate}
+
+The effect of that this sequence has is to measure whether or not the desired physicality constraint holds at the site $s$ \cite{osti_1609314}.
+
+\section{Rodeo Algorithm for Quantum Computing}
+\subsection{Summary of the Rodeo Algorithm\cite{Choi_2021}}
+The rodeo algorithm can work as a filter of states.
+Applying the rodeo algorithm allows one to select for a desired state, and iterate until all orthogonal states are reduced to some error bound.
+
+\begin{figure}[H]
+    \centering
+	\includegraphics[width=0.85\linewidth]{figures/rodeo_circuit}
+	\caption{\cite{Choi_2021} This is a diagram of the quantum circuit for the rodeo algorithm.}
+	\label{fig: rodeo_circuit}
+\end{figure}
+
+An "arena" of ancilla qbits is used to suppress eigenstates of the object Hamiltonian ($H_{obj}$), whose energies are outside the interval $[E-\epsilon,E+\epsilon]$.
+The probability of measuring the $n^{th}$ ancilla qbit in the $\ket{1}$ state is
+\begin{equation}
+	p_n = \cos[2]((E_{obj}-E)\frac{t_n}{2}),
+\end{equation}
+so the probability of measuring all $N$ ancilla qbits in the $\ket{1}$ state is
+\begin{equation}
+	P_N = \prod_{n=1}^N p_n = \prod_{n=1}^N \cos[2]((E_{obj}-E)\frac{t_n}{2}).
+\end{equation}
+If $E_{obj}$ is not equal to the desired energy, $E$, then the spectral weight is suppressed by a factor of $\frac{1}{4^N}$.
+One can repeat this, suppressing energies $E_{obj}\neq E$ more for each cycle.
+
+\section{Accomplishments of Fall 2021}
+\subsection{Implementation of the Rodeo Algorithm}
+An implementation of the rodeo algorithm has been programmed with IBM's qiskit framework.
+The rodeo algorithm can be applied to work with more than just the Hamiltonian operator of the object system, so the code can be used to implement it for any programmed operator.
+However, due to the limitations of the qiskit framework, there are a lot of things that must be left up to the programmer, in order to optimize the runtime.
+As it is now, it works relatively well for low numbers of qbits ($<10$), but, since the runtime increases exponentially with the number of qbits, it gets unmanageable very quickly.
+
+For the the manageable implementation, there are seven qbits total (four ancilla qbits and three object system qbits).
+The object Hamiltonian selected was the same as one of the test cases in the original rodeo algorithm paper: the Heisenberg 1/2-spin model of ferromagnetism.
+This Hamiltonian is given by
+\begin{equation}
+    \hat{H} = -J \sum_{j=1}^{N} \bm{\sigma}_j \vdot \bm{\sigma}_{j+1} - h\sum_{j=1}^{N} \bm{\sigma}_j,
+\end{equation}
+where $N$ is the number of particles, $J$ is the coupling constant, $h$ is the external magnetic field, $\bm{\sigma}_j$ is the vector spin of particle $j$ ($a_j\sigma_j^x+b_j\sigma_j^y+c_j\sigma_j^z$), and $\sigma_j^a$ are given by $\sigma_j^a = I^{\otimes j-1}\otimes \sigma^a \otimes I^{\otimes N-j}$, where $\sigma^a$ are the regular $2\times2$ Pauli matrices.
+
+The object system was initialized to the state $\ket{010}$, and the ancilla qbits were all initialized to $\ket{1}$ as described in \cite{Choi_2021}.
+An energy domain of -40 to +40 (unsure of units) was scanned.
+For each energy, the rodeo algorithm was run 10000 times, and the state of each ancilla qbit was measured.
+The resulting energy spectrum is shown in figure \ref{fig: energy_spectrum}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{figures/energySpec.png}
+    \caption{%
+    This is a figure showing the frequency of measuring all ancilla qbits to be in the $\ket{1}$ state, divided by the total number of shots (10000), on the vertical axis, with the energy being filtered for on the horizontal axis.
+    This gives an energy spectrum indicating the eigenvalues of the object Hamiltonian.
+    Peaks represent values of $E$ that are close to an eigenvalue of the object Hamiltonian, which are the allowed energy levels of the object system.
+    }
+    \label{fig: energy_spectrum}
+\end{figure}
 
 
-\printBib
+\section{Goals for Spring 2022}
 
 
-\if\mcols1
-\end{multicols*}
-\fi
+\nocite{*}
+\printbib
+
+\stopmcols
 \end{document}
+
