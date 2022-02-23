@@ -1,34 +1,23 @@
 \ProvidesPackage{customtitle}
 
-\usepackage{titling}
-\usepackage[
-affil-it,
-]{authblk}
+% \usepackage{titling}
 
-\newcommand{\neverdefineme}{}
-
-\renewcommand{\abstract}[1]{%
-
-\ifx\neverdefineme#1\neverdefineme \else
-
-\renewcommand{\maketitlehookd}{%
-\vspace{0.5cm}
-\begin{changemargin}{2cm}{2cm}
-\begin{center}
-\bfseries Abstract
-\end{center}
-\par #1
-\end{changemargin}}
-
-\fi
+\makeatletter
+\renewcommand{\maketitle}{\bgroup\setlength{\parindent}{0pt}
+\begin{flushleft}
+    \fontsize{24}{15}\selectfont\bfseries\MakeUppercase
+    \@title
+    
+    \fontsize{10}{15}\selectfont
+    \@author
+    
+    \fontsize{10}{15}\selectfont
+    \@date
+\end{flushleft}\egroup
 }
+\makeatother
 
-\setlength{\droptitle}{0cm}
-
-\pretitle{\begin{center}\LARGE\bfseries}
-\posttitle{\end{center}\vspace{0.5cm}}
-
-\predate{\vspace{0.5cm}\begin{center}\large}
-\postdate{\end{center}}
+% \pretitle{\fontsize{24}{15}\selectfont\bfseries\MakeUppercase}
+% \preauthor{\fontsize{10}{15}\selectfont}
 
 \endinput

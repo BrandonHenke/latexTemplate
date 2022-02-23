@@ -1,32 +1,29 @@
 \ProvidesPackage{titleinfo}
-\usepackage{authorsaffils}
 % \makeatletter
 % \let\c@affil\relax
 % \makeatother
-% \usepackage[affil-it]{authblk}
+\usepackage[affil-it]{authblk}
 
-% \makeatletter
-% \patchcmd{\frontmatter@RRAP@format}{(}{}{}{}
-% \patchcmd{\frontmatter@RRAP@format}{)}{}{}{}
-% \renewcommand\Dated@name{}
-% \makeatother
+% ========== [Create Title Section] ==========
 
-% ========== [Create Title] ==========
-
-\newcommand{\thetitle}{Proceedings} % Set title
 
 \newcommand{\titleinf}{%
 
+% ===== Set Title =====
+\newcommand{\thetitle}{Homework 3}
 \title{\thetitle}
 
-\authaffils
+% ===== Set Authors and Affils =====
+\author[1]{Brandon Henke}
+\affil[1]{Michigan State University - Department of Physics \& Astronomy}
 
-\date{\today} % Set date
+% ===== Set Date =====
+\date{February 23, 2022}
 
-
-% \begin{abstract}
+% ===== Set Abstract =====
+% \abstract{%
 %     \lipsum[5]
-% \end{abstract}
+% }
 
 }
 
